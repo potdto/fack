@@ -1,0 +1,1 @@
+npx pkg --compress GZip -t windows -o builds/stacklang.exe main.js

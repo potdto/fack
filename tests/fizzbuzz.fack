@@ -1,0 +1,9 @@
+(x % 3; = 0; || x % 5; = 0; |,\ | false false |,\ = x replaceIf <- x)
+|| true true  |,\  = "fizzbuzz" replaceIf .
+|| true false |,\  = "fizz" replaceIf .
+|| false true |,\  = "buzz" replaceIf .
+
+
+| print . map | 1 .. 100;;
+
+(<-)

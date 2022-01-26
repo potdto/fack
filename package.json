@@ -1,0 +1,16 @@
+{
+  "name": "fack",
+  "version": "1.0.0",
+  "description": "A function oriented stack based programming language",
+  "main": "main.js",
+  "scripts": {
+    "test": "node . -v"
+  },
+  "author": "potsto",
+  "license": "MIT",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "lodash": "^4.17.21",
+    "readline": "^1.3.0"
+  }
+}
