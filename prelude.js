@@ -1,4 +1,4 @@
-let helpSymbol = Symbol("help");
+const helpSymbol = Symbol("help");
 const errors = require("./error");
 const sanitize = require("./sanitize");
 const _ = require("lodash");
@@ -249,4 +249,4 @@ for (let k of Object.getOwnPropertyNames(Math)) {
                     Math[k]
             : Math[k]
 }
-module.exports = { prelude, identifiers };
+module.exports = { prelude, identifiers, helpSymbol };

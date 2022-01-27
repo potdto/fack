@@ -1,5 +1,7 @@
-const { prelude, identifiers } = require("./prelude");
-identifiers.import = s => runFromFile(s);
+const { prelude, identifiers, helpSymbol } = require("./prelude");
+identifiers.import = s =>
+    s == helpSymbol? console.log("{codeblock} <- s <- import\nImports tokens from another file using the file's location passed as a string."):
+    runFromFile(s);
 const fs = require("fs");
 const errors = require("./error");
 const sanitize = require("./sanitize");
