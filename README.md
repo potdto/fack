@@ -17,7 +17,7 @@ Usage:
 # Examples
 ## hello world
 ```javascript
-"Hello, World" print
+"Hello World" print
 ```
 ## fizzbuzz
 ```javascript
@@ -28,4 +28,12 @@ Usage:
 | print . map | 1 .. 100;;
 (<-)
 ```
+## factorial
+```javascript
+(1 .. x floor; |* 1 scanl <- x)
+define "fact";
+
+5 fact print
+```
+
 Don't really know what else to put here, this is my first readme.

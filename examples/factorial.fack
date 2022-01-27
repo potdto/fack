@@ -1,0 +1,4 @@
+(1 .. x floor; |* 1 scanl <- x)
+define "fact";
+
+5 fact print
