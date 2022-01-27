@@ -60,9 +60,6 @@ function run(file, obj = identifiers, san = true) {
                 let argName = value[1].trim();
                 let fbody = value[0];
                 append(a => {
-                    /**
-                     * @todo error handling of type checking
-                     */
                     if (argName.split(" ").length > 1) {
                         let type = argName.split(" ")[1];
                         argName = argName.split(" ")[0];
