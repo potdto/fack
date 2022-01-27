@@ -11,6 +11,7 @@ const sanitize = require("./sanitize");
  */
 function append(f, stack) {
     if (typeof f != "function") return stack.push(f);
+    if (f.length == 0) return stack.push(f());
     let a = stack.pop();
     while (typeof f == "function" && a != "pipe" && a != undefined) {
         f = f(a);

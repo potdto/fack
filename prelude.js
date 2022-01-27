@@ -235,9 +235,18 @@ const identifiers = {
             !a,
 }
 for (let k of Object.getOwnPropertyNames(Math)) {
-    identifiers[k] = typeof Math[k] == "function" ?
-        x => (x == helpSymbol ? console.log("Help text not available.") : _.curry(Math[k])(x))
-        // unsafe for functions with more than 1 argument passed, e.g. `5 max help` breaks 
-        : Math[k];
+    identifiers[k] =
+        typeof Math[k] == "function" ?
+            Math[k].length == 1 ?
+                x => x == helpSymbol ? console.log("Help is not available for advanced math functions, sorry.") :
+                    typeof x != "number" ? errors.type(x, "number", k) : Math[k](x)
+                : Math[k].length == 2 ?
+                    x => x == helpSymbol ? console.log("Help is not available for advanced math functions, sorry.") :
+                        typeof x != "number" ? errors.type(x, "number", k) :
+                            y => y == helpSymbol ? console.log("Help is not available for advanced math functions, sorry.") :
+                                typeof y != "number" ? errors.type(y, "number", k) :
+                                    Math[k](x, y) :
+                    Math[k]
+            : Math[k]
 }
 module.exports = { prelude, identifiers };
