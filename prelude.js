@@ -95,7 +95,7 @@ const prelude = {
     },
     reverse: {
         regex: /^\;/,
-        func: a =>
+        func: a => a == helpSymbol? console.log("f(x) <- f <- x <- ;\ntakes a function and an argument and runs the function on that argument. Used for making functions go between their arguments\nEXAMPLES\n70 - 1;\t// returns 69"):
             f => f == helpSymbol ? console.log("f(x) <- f <- x <- ;\ntakes a function and an argument and runs the function on that argument. Used for making functions go between their arguments\nEXAMPLES\n70 - 1;\t// returns 69") :
                 typeof f != "function" ? errors.type(f, "function", "reverse, (;)") :
                     f(a)
