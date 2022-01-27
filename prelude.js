@@ -2,7 +2,7 @@ let helpSymbol = Symbol("help");
 const errors = require("./error");
 const sanitize = require("./sanitize");
 const _ = require("lodash");
-const uncurry2 = (x, y) => {
+const uncurry2 = f => (x, y) => {
     try {
         return f(x)(y)
     } catch (err) {
