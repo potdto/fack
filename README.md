@@ -36,4 +36,6 @@ define "fact";
 5 fact print
 ```
 
+For a full tutorial, [visit here](./tutorial.md)
+
 Don't really know what else to put here, this is my first readme.
