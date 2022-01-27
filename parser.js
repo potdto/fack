@@ -57,7 +57,6 @@ function run(file, obj = identifiers, san = true) {
                     value[1] = value[0] + " <- " + value[1];
                     value.shift();
                 }
-                console.log(value)
                 let argName = value[1].trim();
                 let fbody = value[0];
                 append(a => {
