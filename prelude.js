@@ -95,7 +95,7 @@ const prelude = {
     },
     reverse: {
         regex: /^\;/,
-        func: a => a == helpSymbol? console.log("f(x) <- f <- x <- ;\ntakes a function and an argument and runs the function on that argument. Used for making functions go between their arguments\nEXAMPLES\n70 - 1;\t// returns 69"):
+        func: a => a == helpSymbol ? console.log("f(x) <- f <- x <- ;\ntakes a function and an argument and runs the function on that argument. Used for making functions go between their arguments\nEXAMPLES\n70 - 1;\t// returns 69") :
             f => f == helpSymbol ? console.log("f(x) <- f <- x <- ;\ntakes a function and an argument and runs the function on that argument. Used for making functions go between their arguments\nEXAMPLES\n70 - 1;\t// returns 69") :
                 typeof f != "function" ? errors.type(f, "function", "reverse, (;)") :
                     f(a)
@@ -125,7 +125,7 @@ const prelude = {
     },
     compose: {
         regex: /^\./,
-        func: f => f == helpSymbol ? console.log("f(g(x)) <- g <- f <- .\ntakes 2 functions and combines them into one function.\nEXAMPLES\n/* if we have a function that multplies by 2 */\t| 2*\n/* and another function that subtracts 1 */\t| 1 |-\\\n/* we can compose them into one function that multiplies by 2 then subtracts 1 */ .\n 35;\t// returns 69") :
+        func: f => f == helpSymbol ? console.log("(f(g(x)) <- x <- g <- f <- .\ntakes 2 functions and combines them into one function.\nEXAMPLES\n/* if we have a function that multplies by 2 */\t| 2*\n/* and another function that subtracts 1 */\t| 1 |-\\\n/* we can compose them into one function that multiplies by 2 then subtracts 1 */ .\n 35;\t// returns 69") :
             typeof f != "function" ? errors.type(f, "function", "compose, (.)") :
                 g => g == helpSymbol ? console.log("f(g(x)) <- g <- .\ntakes 2 functions and combines them into one function.\nEXAMPLES\n/* if we have a function that multplies by 2 */\t| 2*\n/* and another function that subtracts 1 */\t| 1 |-\\\n/* we can compose them into one function that multiplies by 2 then subtracts 1 */ .\n 35;\t// returns 69") :
                     typeof g != "function" ? errors.type(g, "function", "compose, (.)") :
@@ -162,7 +162,7 @@ const identifiers = {
     false: false,
     help: f => f == helpSymbol ? console.log("For help on a function type `<function> help`") :
         typeof f != "function" ? errors.type(f, "function", "help") : f(helpSymbol),
-    diff: f => f == helpSymbol ? console.log("(n <- x <- f') <- f <- diff\nReturns the derivative of a function.") :
+    diff: f => f == helpSymbol ? console.log("f' <- f <- diff\nReturns the derivative of a function.") :
         x => {
             const h = 1e-10;
             return (f(x + h) - f(x)) / h;
@@ -185,7 +185,7 @@ const identifiers = {
             arr => arr == helpSymbol ? console.log("[f(x)] <- [x] <- map\ntakes an array as an argument and then performs the function on each of the arguments. This function has already been passed a function f as an argument.") :
                 !arr.map ? errors.type(arr, "array", "map") :
                     arr.map(f),
-    scanl: a => a == helpSymbol ? console.log("x <- [x] <- (a <- x' <- x <- f) <- a <- scanl\nReduces an array to a single element with a specific function that takes the previous value and the current.\nEXAMPLES\n1 .. 36; |+ 0 reduce // returns the sum of 1 to 36, which is 666.") :
+    scanl: a => a == helpSymbol ? console.log("n <- [x] <- (n <- x <- acc <- f) <- a <- scanl\nReduces an array to a single element with a specific function that takes the previous value and the current.\nEXAMPLES\n1 .. 36; |+ 0 reduce // returns the sum of 1 to 36, which is 666.") :
         f => f == helpSymbol ? console.log("x <- [x] <- (a <- x' <- x <- f) <- scanl\nReduces an array to a single element with a specific function that takes the previous value and the current.\nEXAMPLES\n1 .. 36; |+ 0 reduce // returns the sum of 1 to 36, which is 666.") :
             typeof f != "function" ? errors.type(f, "function", "scanl") :
                 arr => a == helpSymbol ? console.log("x <- [x] <- scanl\nReduces an array to a single element with a specific function that takes the previous value and the current.\nEXAMPLES\n1 .. 36; |+ 0 reduce // returns the sum of 1 to 36, which is 666.") :
@@ -199,14 +199,14 @@ const identifiers = {
                         x =>
                             f(x) ? y : x,
     replaceIfElse: a =>
-        a == helpSymbol ? console.log("x | y <- b <- x <- y <- replaceIfElse\nreplaces a boolean with another value\nEXAMPLES\ntrue 420 69 replaceIfElse\t// returns 420\nfalse 420 69 replaceIfElse\t// returns 69") :
-            b => b == helpSymbol ? console.log("x | y <- b <- x <- replaceIfElse\nreplaces a boolean with another value\nEXAMPLES\ntrue 420 69 replaceIfElse\t// returns 420\nfalse 420 69 replaceIfElse\t// returns 69") :
-                c => c == helpSymbol ? console.log("x | y <- b <- replaceIfElse\nreplaces a boolean with another value\nEXAMPLES\ntrue 420 69 replaceIfElse\t// returns 420\nfalse 420 69 replaceIfElse\t// returns 69") :
+        a == helpSymbol ? console.log("x|y <- b <- x <- y <- replaceIfElse\nreplaces a boolean with another value\nEXAMPLES\ntrue 420 69 replaceIfElse\t// returns 420\nfalse 420 69 replaceIfElse\t// returns 69") :
+            b => b == helpSymbol ? console.log("x|y <- b <- x <- replaceIfElse\nreplaces a boolean with another value\nEXAMPLES\ntrue 420 69 replaceIfElse\t// returns 420\nfalse 420 69 replaceIfElse\t// returns 69") :
+                c => c == helpSymbol ? console.log("x|y <- b <- replaceIfElse\nreplaces a boolean with another value\nEXAMPLES\ntrue 420 69 replaceIfElse\t// returns 420\nfalse 420 69 replaceIfElse\t// returns 69") :
                     c ? b : a,
     head: arr => arr == helpSymbol ? console.log("x <- [x] <- head\nGets the first element of an array.") :
         !arr.map ? errors.type(arr, "array", "head") :
             arr[0],
-    tail: arr => arr == helpSymbol ? console.log("[x] <- [x] <- tail\nreturns the array without the first element.") :
+    tail: arr => arr == helpSymbol ? console.log("[x] <- [x] <- tail\nReturns an array without the first element.") :
         !arr.map ? errors.type(arr, "array", "head") :
             arr.slice(1),
     and: a => a == helpSymbol ? console.log("{bool} <- b <- b <- and\nIf both values are true, returns true, else returns false.") :
