@@ -8,14 +8,14 @@ const sanitize = require("./sanitize");
 
 /**
  * 
- * @param {Function} f 
+ * @param {Function} f
  * @param {Array} stack 
  */
 function append(f, stack) {
     if (typeof f != "function") return stack.push(f);
     if (f.length == 0) return stack.push(f());
     let a = stack.pop();
-    while (typeof f == "function" && a != "pipe" && a != undefined) {
+    while (typeof f == "function" && a != "|" && a != undefined) {
         f = f(a);
         if (typeof f != "function") break;
         a = stack.pop();
@@ -24,12 +24,11 @@ function append(f, stack) {
 }
 /**
  * 
- * @param {string} file 
- * @param {object} obj 
- * @param {boolean} san
+ * @param {string} file
+ * @param {object} obj
  * @returns Array
  */
-function run(file, obj = identifiers, san = true) {
+function run(file, scope = identifiers) {
 
     const tokens = [];
     let n = 1000;
@@ -70,9 +69,9 @@ function run(file, obj = identifiers, san = true) {
                             return errors.type(a, type, "(lambda)")
                         }
                     }
-                    const lambdaObj = Object.create(obj);
+                    const lambdaObj = Object.create(scope);
                     lambdaObj[argName] = a;
-                    run(fbody, lambdaObj, false).forEach(x => append(x, stack));
+                    run(fbody, lambdaObj).forEach(x => append(x, stack));
                 }, stack);
                 break;
             case "string":
@@ -90,14 +89,14 @@ function run(file, obj = identifiers, san = true) {
                 append(Number(value), stack);
                 break;
             case "identifier":
-                if (obj[value] == undefined) errors.nil(value);
-                append(obj[value], stack);
+                if (scope[value] == undefined) errors.nil(value);
+                append(scope[value], stack);
                 break;
             case "pipe":
-                append("pipe", stack);
+                append("|", stack);
                 break;
             case "define":
-                append(token[0].func(obj), stack);
+                append(token[0].func(scope), stack);
                 break;
             default:
                 if (token[0].func) {
@@ -111,13 +110,13 @@ function run(file, obj = identifiers, san = true) {
                 break;
         }
     });
-    return san ? sanitize(stack) : stack;
+    return stack;
 }
 const runFromFile = path => {
     try {
         return run(
             fs.readFileSync(path, { encoding: "utf-8" })
-            , identifiers, false);
+            , identifiers);
     } catch (e) {
         errors.read(path);
     }
