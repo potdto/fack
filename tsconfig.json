@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "watch": true,
+        "target": "esnext",
+        "module": "commonjs"
+    },
+    "include": [
+        "main.ts",
+        "parser.ts",
+        "prelude.ts",
+        "error.ts",
+        "sanitize.ts"
+    ]
+}

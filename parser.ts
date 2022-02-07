@@ -1,32 +1,29 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.runFromFile = exports.run = void 0;
-const fs = require("fs");
-const prelude_1 = require("./prelude");
-const error_1 = require("./error");
-prelude_1.identifiers.import = (s) => s == prelude_1.helpSymbol ? console.log("{codeblock} <- s <- import\nImports tokens from another file using the file's location passed as a string.") :
-    (0, exports.runFromFile)(s);
-function append(f, stack) {
-    if (typeof f != "function")
-        return void stack.push(f);
-    if (f.length == 0)
-        return void stack.push(f());
+import fs = require("fs");
+import {identifiers, prelude, helpSymbol} from "./prelude";
+import errors from "./error";
+
+identifiers.import = (s: string|Symbol) =>
+    s == helpSymbol? console.log("{codeblock} <- s <- import\nImports tokens from another file using the file's location passed as a string."):
+    runFromFile(s as string);
+
+function append(f: any, stack: any[]): void {
+    if (typeof f != "function") return void stack.push(f);
+    if (f.length == 0) return void stack.push(f());
     let a = stack.pop();
     while (typeof f == "function" && a != "|" && a != undefined) {
         f = f(a);
-        if (typeof f != "function")
-            break;
+        if (typeof f != "function") break;
         a = stack.pop();
     }
-    if (f != null && f != undefined)
-        stack.push(f);
+    if (f != null && f != undefined) stack.push(f);
 }
-function run(file, scope = prelude_1.identifiers) {
+
+export function run(file: string, scope = identifiers) {
     const tokens = [];
     let n = 1000;
     while (file.length > 0 && n-- > 0) {
-        for (let key in prelude_1.prelude) {
-            let variable = prelude_1.prelude[key];
+        for (let key in prelude) {
+            let variable = prelude[key];
             variable.name = key;
             if (variable.regex.test(file)) {
                 tokens.push([variable, file.match(variable.regex)[0]]);
@@ -35,14 +32,15 @@ function run(file, scope = prelude_1.identifiers) {
             }
         }
     }
-    if (n <= 0)
-        console.log("ERROR: weird character detected, command failed");
+    if (n <= 0) console.log("ERROR: weird character detected, command failed");
     const stack = [];
     tokens.forEach(token => {
         let value = token[1];
         switch (token[0].name) {
             case "js":
-                append(eval(value.slice(1, value.length - 1)), stack);
+                append(
+                    eval(value.slice(1, value.length - 1))
+                    , stack)
                 break;
             case "lambda":
                 value = value.replace(/(^\()|(\)$)/g, "").split("<-"); // crude removing ()
@@ -57,7 +55,7 @@ function run(file, scope = prelude_1.identifiers) {
                         let type = argName.split(" ")[1];
                         argName = argName.split(" ")[0];
                         if (typeof a != type) {
-                            return error_1.default.type(a, type, "(lambda)");
+                            return errors.type(a, type, "(lambda)")
                         }
                     }
                     const lambdaObj = Object.create(scope);
@@ -66,21 +64,21 @@ function run(file, scope = prelude_1.identifiers) {
                 }, stack);
                 break;
             case "string":
-                let val;
+                let val: string;
                 try {
                     val = eval(value);
-                    append(val, stack);
-                }
-                catch (e) {
-                    error_1.default.string(value);
+                    append(
+                        val,
+                        stack);
+                } catch (e) {
+                    errors.string(value);
                 }
                 break;
             case "number":
                 append(Number(value), stack);
                 break;
             case "identifier":
-                if (scope[value] == undefined)
-                    error_1.default.nil(value);
+                if (scope[value] == undefined) errors.nil(value);
                 append(scope[value], stack);
                 break;
             case "pipe":
@@ -93,8 +91,7 @@ function run(file, scope = prelude_1.identifiers) {
                 if (token[0].func) {
                     append(token[0].func, stack);
                     return;
-                }
-                else {
+                } else {
                     append(value, stack);
                 }
             case "whitespace":
@@ -104,13 +101,12 @@ function run(file, scope = prelude_1.identifiers) {
     });
     return stack;
 }
-exports.run = run;
-const runFromFile = (path) => {
+export const runFromFile = (path: string) => {
     try {
-        return run(fs.readFileSync(path, { encoding: "utf-8" }), prelude_1.identifiers);
+        return run(
+            fs.readFileSync(path, { encoding: "utf-8" })
+            , identifiers);
+    } catch (e) {
+        errors.read(path);
     }
-    catch (e) {
-        error_1.default.read(path);
-    }
-};
-exports.runFromFile = runFromFile;
+}
