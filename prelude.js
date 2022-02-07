@@ -14,7 +14,7 @@ const prelude = {
         regex: /^\s+/,
     },
     js: {
-        regex: /^\{[^}]*\}/,
+        regex: /^{[^}]*}/,
     },
     lambda: {
         // regex: /(^\([^()]*<-.*\))|(^[^()]*<-.*$)/,
@@ -43,7 +43,7 @@ const prelude = {
         regex: /^\".*\"/,
     },
     comment: {
-        regex: /^(\/\/.*)|(\/\*(.|\n)*\*\/)/,
+        regex: /^((\/)([*])*(.|\n)+?(\2\1))|(\/\/.*)/,
     },
     add: {
         regex: /^\+/,
@@ -54,7 +54,7 @@ const prelude = {
                         a + b
     },
     minus: {
-        regex: /^\-/,
+        regex: /^-/,
         func: a => a == helpSymbol ? console.log("{a - b} <- b <- a <- -\nsubtracts 2 numbers.") :
             typeof a != "number" ? errors.type(a, "number", "minus, (-)") :
                 b => b == helpSymbol ? console.log(`b <- -\ndoes ${a} - b\nNOTE: if you want this function to do b - ${a}, then use \`${a} |-\\\` instead.`) :
@@ -78,7 +78,7 @@ const prelude = {
                         a / b
     },
     mod: {
-        regex: /^\%/,
+        regex: /^%/,
         func: a => a == helpSymbol ? console.log("{a % b} <- b <- a <- %\ndoes the modulo of 2 numbers.") :
             typeof a != "number" ? errors.type(a, "number", "modulo, (%)") :
                 b => b == helpSymbol ? console.log(`b <- %\ndoes ${a} % b\nNOTE: if you want this function to do b % ${a}, then use \`${a} |%\\\` instead.`) :
@@ -94,7 +94,7 @@ const prelude = {
                         Math.pow(a, b)
     },
     reverse: {
-        regex: /^\;/,
+        regex: /^;/,
         func: a => a == helpSymbol ? console.log("f(x) <- f <- x <- ;\ntakes a function and an argument and runs the function on that argument. Used for making functions go between their arguments\nEXAMPLES\n70 - 1;\t// returns 69") :
             f => f == helpSymbol ? console.log("f(x) <- f <- x <- ;\ntakes a function and an argument and runs the function on that argument. Used for making functions go between their arguments\nEXAMPLES\n70 - 1;\t// returns 69") :
                 typeof f != "function" ? errors.type(f, "function", "reverse, (;)") :
@@ -132,7 +132,7 @@ const prelude = {
                         x => f(g(x))
     },
     eq: {
-        regex: /^\=/,
+        regex: /^=/,
         func: a => a == helpSymbol ? console.log("{bool} <- b <- a <- =\nTests to see if 2 values are equal.") :
             b => b == helpSymbol ? console.log(`{bool} <- b <- =\nTests to see if an input is equal to ${sanitize(a)}.`) :
                 JSON.stringify(a) == JSON.stringify(b)
