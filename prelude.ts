@@ -235,12 +235,12 @@ for (let k of Object.getOwnPropertyNames(Math)) {
     identifiers[k] =
         typeof Math[k] == "function" ?
             Math[k].length == 1 ?
-                (x: Symbol) => x == helpSymbol ? console.log("Help is not available for advanced math functions, sorry.") :
+                (x: Number | Symbol) => x == helpSymbol ? console.log("Help is not available for advanced math functions, sorry.") :
                     typeof x != "number" ? errors.type(x, "number", k) : Math[k](x)
                 : Math[k].length == 2 ?
-                    (x: Symbol) => x == helpSymbol ? console.log("Help is not available for advanced math functions, sorry.") :
+                    (x: Number | Symbol) => x == helpSymbol ? console.log("Help is not available for advanced math functions, sorry.") :
                         typeof x != "number" ? errors.type(x, "number", k) :
-                            (y: Symbol) => y == helpSymbol ? console.log("Help is not available for advanced math functions, sorry.") :
+                            (y: Number | Symbol) => y == helpSymbol ? console.log("Help is not available for advanced math functions, sorry.") :
                                 typeof y != "number" ? errors.type(y, "number", k) :
                                     Math[k](x, y) :
                     Math[k]
