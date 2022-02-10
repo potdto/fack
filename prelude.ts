@@ -213,7 +213,7 @@ export const identifiers: any = {
                     a && b,
     or: (a: Boolean|Symbol) => a == helpSymbol ? console.log("{bool} <- x <- y <- or\nReturns true if x or y is true, else returns false.") :
         typeof a != "boolean" ? errors.type(a, "boolean", "or") :
-            (b: Boolean | Symbol) => b == helpSymbol ?
+            (b: boolean | Symbol) => b == helpSymbol ?
                 a ? console.log("true <- b <- or\n Returns true")
                     : console.log("b <- b <- or\n Returns b")
                 :
@@ -227,7 +227,7 @@ export const identifiers: any = {
                 :
                 typeof b != "boolean" ? errors.type(b, "boolean", "xor") :
                     a != b,
-    not: (a: Boolean | Symbol) => a == helpSymbol ? console.log("{bool} <- b <- not\nIf the value is true, then return false, if false then return true.") :
+    not: (a: boolean | Symbol) => a == helpSymbol ? console.log("{bool} <- b <- not\nIf the value is true, then return false, if false then return true.") :
         typeof a != "boolean" ? errors.type(a, "boolean", "not") :
             !a,
 }
