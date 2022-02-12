@@ -4,27 +4,36 @@ import sanitize from "./sanitize";
 export const helpSymbol = Symbol("help");
 const uncurry2 = (f: Function) => (x: any, y: any) => {
     try {
-        return f(x)(y)
+        return f(x)(y);
     } catch (err) {
         console.log("ERROR in `uncurry2`: " + err);
     }
 }
-export const prelude = {
+export interface token {
+    readonly regex?: RegExp;
+    readonly func?: Function;
+    name?: string;
+    value?: any;
+}
+interface prelude {
+    [key: string]: token;
+}
+
+export const prelude: prelude = {
     whitespace: {
         regex: /^\s+/,
     },
     js: {
         regex: /^{[^}]*}/,
     },
+    openBracket: {
+        regex: /^\(/
+    },
+    closeBracket: {
+        regex: /^\)/
+    },
     lambda: {
-        regex: (() => {
-            let a = "(^\\(([^)]|(?R))*<-(.|\\s)*\\))|(^[^()]*<-(.|\\s)*$)";
-            for (let i = 0; i < 3; i++) {
-                a = a.replace(/\(\?R\)/g, a);
-            }
-            a = a.replace(/\|?\(\?R\)/g, "");
-            return RegExp(a);
-        })()
+        regex: /^[^()]*<-[^()]*/,
     },
     define: {
         regex: /^define/,

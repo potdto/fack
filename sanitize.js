@@ -10,6 +10,9 @@ function sanitize(x) {
     else if (typeof x == "string") {
         return `"${x}"`;
     }
+    else if (x?.name == "codeBlock") {
+        return "(codeBlock)";
+    }
     else {
         return x;
     }

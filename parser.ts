@@ -1,10 +1,11 @@
 import fs = require("fs");
-import {identifiers, prelude, helpSymbol} from "./prelude";
+import _ = require("lodash");
+import { identifiers, prelude, helpSymbol, token } from "./prelude";
 import errors from "./error";
 
-identifiers.import = (s: string|Symbol) =>
-    s == helpSymbol? console.log("{codeblock} <- s <- import\nImports tokens from another file using the file's location passed as a string."):
-    runFromFile(s as string);
+identifiers.import = (s: string | Symbol) =>
+    s == helpSymbol ? console.log("{codeblock} <- s <- import\nImports tokens from another file using the file's location passed as a string.") :
+        runFromFile(s as string);
 
 function append(f: any, stack: any[]): void {
     if (typeof f != "function") return void stack.push(f);
@@ -18,39 +19,60 @@ function append(f: any, stack: any[]): void {
     if (f != null && f != undefined) stack.push(f);
 }
 
-export function run(file: string, scope = identifiers) {
-    const tokens = [];
-    let n = 1000;
+function tokenize(file: string) {
+    let tokens: token[] = [];
+    let n = 1e300;
     while (file.length > 0 && n-- > 0) {
-        for (let key in prelude) {
-            let variable = prelude[key];
-            variable.name = key;
-            if (variable.regex.test(file)) {
-                tokens.push([variable, file.match(variable.regex)[0]]);
-                file = file.replace(variable.regex, "");
-                break;
+        for (const key in prelude) {
+            const token: token = Object.create(prelude[key]);
+            token.name = key;
+            if (token.regex.test(file)) {
+                token.value = file.match(token.regex)[0];
+
+                if (token.name == "closeBracket") {
+                    for (let j = tokens.length - 1; j >= 0; j--) {
+                        if (tokens[j].name == "openBracket") {
+                            const a = { name: "codeBlock", value: tokens.slice(j + 1, tokens.length) };
+                            tokens.splice(j);
+                            if (a.value.length == 1 && a.value[0].name == "lambda")
+                                tokens.push(...a.value);
+                            else
+                                tokens.push(a);
+                        }
+                    }
+                } else {
+                    tokens.push(token);
+                }
+                file = file.replace(token.regex, "");
             }
         }
     }
     if (n <= 0) console.log("ERROR: weird character detected, command failed");
+    return tokens;
+}
+
+export function run(file: string, scope = identifiers) {
+    const tokens = tokenize(file);
     const stack = [];
     tokens.forEach(token => {
-        let value = token[1];
-        switch (token[0].name) {
+        switch (token.name) {
+            case "codeBlock":
+                append(token, stack);
+                break;
             case "js":
                 append(
-                    eval(value.slice(1, value.length - 1))
+                    eval(token.value.slice(1, token.value.length - 1))
                     , stack)
                 break;
             case "lambda":
-                value = value.replace(/(^\()|(\)$)/g, "").split("<-"); // crude removing ()
-                while (value.length > 2) {
-                    value[1] = value[0] + " <- " + value[1];
-                    value.shift();
+                token.value = token.value.split("<-");
+                while (token.value.length > 2) {
+                    token.value[1] = token.value[0] + " <- " + token.value[1];
+                    token.value.shift();
                 }
-                let argName = value[1].trim();
-                let fbody = value[0];
-                append(a => {
+                let argName = token.value[1].trim();
+                let fbody = token.value[0];
+                append((a: any) => {
                     if (argName.split(" ").length > 1) {
                         let type = argName.split(" ")[1];
                         argName = argName.split(" ")[0];
@@ -66,33 +88,33 @@ export function run(file: string, scope = identifiers) {
             case "string":
                 let val: string;
                 try {
-                    val = eval(value);
+                    val = eval(token.value);
                     append(
                         val,
                         stack);
                 } catch (e) {
-                    errors.string(value);
+                    errors.string(token.value);
                 }
                 break;
             case "number":
-                append(Number(value), stack);
+                append(Number(token.value), stack);
                 break;
             case "identifier":
-                if (scope[value] == undefined) errors.nil(value);
-                append(scope[value], stack);
+                if (scope[token.value] == undefined) errors.nil(token.value);
+                append(scope[token.value], stack);
                 break;
             case "pipe":
                 append("|", stack);
                 break;
             case "define":
-                append(token[0].func(scope), stack);
+                append(token.func(scope), stack);
                 break;
             default:
-                if (token[0].func) {
-                    append(token[0].func, stack);
+                if (token.func) {
+                    append(token.func, stack);
                     return;
                 } else {
-                    append(value, stack);
+                    append(token.value, stack);
                 }
             case "whitespace":
             case "comment":

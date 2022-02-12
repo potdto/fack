@@ -20,15 +20,14 @@ exports.prelude = {
     js: {
         regex: /^{[^}]*}/,
     },
+    openBracket: {
+        regex: /^\(/
+    },
+    closeBracket: {
+        regex: /^\)/
+    },
     lambda: {
-        regex: (() => {
-            let a = "(^\\(([^)]|(?R))*<-(.|\\s)*\\))|(^[^()]*<-(.|\\s)*$)";
-            for (let i = 0; i < 3; i++) {
-                a = a.replace(/\(\?R\)/g, a);
-            }
-            a = a.replace(/\|?\(\?R\)/g, "");
-            return RegExp(a);
-        })()
+        regex: /^[^()]*<-[^()]*/,
     },
     define: {
         regex: /^define/,
@@ -247,4 +246,3 @@ for (let k of Object.getOwnPropertyNames(Math)) {
                     Math[k]
             : Math[k];
 }
-module.exports = { prelude: exports.prelude, identifiers: exports.identifiers, helpSymbol: exports.helpSymbol };

@@ -17,7 +17,7 @@ switch (args[0]) {
         console.log("Interactive command line, use Ctrl+C to quit and Ctrl+L to clear the console.");
         let rec = () => {
             readline.question("> ", (input: string) => {
-                console.log(run(input));
+                console.log(sanitize(run(input)));
                 rec();
             });
         }
