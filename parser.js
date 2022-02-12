@@ -61,9 +61,6 @@ function run(file, scope = prelude_1.identifiers) {
             case "codeBlock":
                 append(token, stack);
                 break;
-            case "js":
-                append(eval(token.value.slice(1, token.value.length - 1)), stack);
-                break;
             case "lambda":
                 token.value = token.value.split("<-");
                 while (token.value.length > 2) {

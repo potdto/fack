@@ -23,9 +23,6 @@ export const prelude: prelude = {
     whitespace: {
         regex: /^\s+/,
     },
-    js: {
-        regex: /^{[^}]*}/,
-    },
     openBracket: {
         regex: /^\(/
     },
