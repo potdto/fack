@@ -1,4 +1,3 @@
 recursion
 true if statements
-new way to deal with brackets in token parser, have ) search for (
 Remove js{}
