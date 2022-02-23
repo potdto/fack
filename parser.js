@@ -23,7 +23,7 @@ function append(f, stack) {
 }
 function tokenize(file) {
     let tokens = [];
-    let n = 1e300;
+    let n = 1e10;
     while (file.length > 0 && n-- > 0) {
         for (const key in prelude_1.prelude) {
             const token = Object.create(prelude_1.prelude[key]);
@@ -36,7 +36,7 @@ function tokenize(file) {
                             const a = { name: "codeBlock", value: tokens.slice(j + 1, tokens.length) };
                             tokens.splice(j);
                             if (a.value.length == 1 && a.value[0].name == "lambda")
-                                tokens.push(...a.value);
+                                tokens.push(a.value[0]);
                             else
                                 tokens.push(a);
                         }
@@ -53,9 +53,8 @@ function tokenize(file) {
         console.log("ERROR: weird character detected, command failed");
     return tokens;
 }
-function run(file, scope = prelude_1.identifiers) {
+function run(file, scope = prelude_1.identifiers, stack = []) {
     const tokens = tokenize(file);
-    const stack = [];
     tokens.forEach(token => {
         switch (token.name) {
             case "codeBlock":
@@ -68,18 +67,21 @@ function run(file, scope = prelude_1.identifiers) {
                     token.value.shift();
                 }
                 let argName = token.value[1].trim();
-                let fbody = token.value[0];
+                const fbody = token.value[0];
                 append((a) => {
                     if (argName.split(" ").length > 1) {
-                        let type = argName.split(" ")[1];
+                        const type = argName.split(" ")[1];
                         argName = argName.split(" ")[0];
                         if (typeof a != type) {
                             return error_1.default.type(a, type, "(lambda)");
                         }
                     }
-                    const lambdaObj = Object.create(scope);
-                    lambdaObj[argName] = a;
-                    run(fbody, lambdaObj).forEach(x => append(x, stack));
+                    const lambdaScope = Object.create(scope);
+                    lambdaScope[argName] = a;
+                    const lambdaStack = run(fbody, lambdaScope, []);
+                    if (lambdaStack.length > 1)
+                        error_1.default.return();
+                    return lambdaStack[0];
                 }, stack);
                 break;
             case "string":
